@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Repository
 {
-    public class BlogPostRepository : IBlogPostRepository
+    public class BlogPostRepository
     {
         private readonly BlogPostContext context;
 
@@ -16,17 +16,17 @@ namespace BlogApi.Repository
             this.context = context;
         }
 
-        public async Task<IEnumerable<BlogPost>> GetAllAsync()
+        public async Task<IEnumerable<BlogPost>> GettingAllBooksFromRepository()
         {
             return await context.BlogPosts.ToListAsync();
         }
 
-        public async Task<BlogPost> GetAsync(long id)
+        public async Task<BlogPost> GettingOnlyOneBook(long id)
         {
             return await context.BlogPosts.FindAsync(id);
         }
 
-        public async Task AddAsync(BlogPost post)
+        public async Task AddingABookToRepository(BlogPost post)
         {
             var isTitleAlreadyExisting = await context.BlogPosts.AnyAsync(x => x.Title.Equals(post.Title));
 
@@ -39,7 +39,7 @@ namespace BlogApi.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(BlogPost post)
+        public async Task UpdatingABookInRepository(BlogPost post)
         {
             var isSuchTitleAlreadyExisting = await context.BlogPosts.AnyAsync(x => x.Title.Equals(post.Title) && x.Id != post.Id);
 
@@ -54,7 +54,7 @@ namespace BlogApi.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(long id)
+        public async Task RemovalOfBookFromRepository(long id)
         {
             var post = await context.BlogPosts.FindAsync(id);
             if (post != null)

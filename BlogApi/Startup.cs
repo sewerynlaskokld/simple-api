@@ -1,5 +1,4 @@
 using BlogApi.Data;
-using BlogApi.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +33,6 @@ namespace BlogApi
                     Description = "RESTful repository allowing basic CRUD operations on blog post resource."
                 });
             });
-
-            services.AddScoped<IBlogPostRepository, BlogPostRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
