@@ -27,7 +27,7 @@ namespace BlogApi.Controllers
         public async Task<ActionResult<IEnumerable<BlogPost>>> GetAll()
         {
             _logger.LogInformation("Obtaining all the blog posts");
-            var posts = await postsRepo.GetAllAsync();
+            var posts = postsRepo.GettingAllBooksFromRepository().Result;
             _logger.LogDebug("Retrieved {0} posts total", posts.ToList().Count);
 
             return Ok(posts);
@@ -40,7 +40,7 @@ namespace BlogApi.Controllers
         {
             _logger.LogInformation("Obtaining post {Id}", id);
 
-            var item = await postsRepo.GetAsync(id);
+            var item = postsRepo.GettingOnlyOneBook(id).Result;
             if (item == null)
             {
                 _logger.LogWarning("Post {Id} not found", id);
@@ -57,7 +57,7 @@ namespace BlogApi.Controllers
         {
             _logger.LogInformation("Adding new blog post");
 
-            await postsRepo.AddAsync(post);
+            await postsRepo.AddingABookToRepository(post);
 
             _logger.LogInformation("Post {0} has been added", post.Id);
             return CreatedAtRoute("GetBlogPost", new { id = post.Id }, post);
@@ -72,7 +72,7 @@ namespace BlogApi.Controllers
             _logger.LogInformation("Updating post {0}", id);
             _logger.LogDebug("Received post id {0} with new title: {1}'", id, updatedPost.Title);
 
-            var post = await postsRepo.GetAsync(id);
+            var post = postsRepo.GettingOnlyOneBook(id).Result;
             if (post == null)
             {
                 _logger.LogWarning("Post {0} not found", id);
@@ -80,7 +80,7 @@ namespace BlogApi.Controllers
             }
 
             updatedPost.Id = id;
-            await postsRepo.UpdateAsync(updatedPost);
+            await postsRepo.UpdatingABookInRepository(updatedPost);
 
             _logger.LogInformation("Updating post {0} succeeded", post.Id);
             return Ok();
@@ -93,14 +93,14 @@ namespace BlogApi.Controllers
         {
             _logger.LogInformation("Removing post {id}", id);
 
-            var post = await postsRepo.GetAsync(id);
+            var post = postsRepo.GettingOnlyOneBook(id).Result;
             if (post == null)
             {
                 _logger.LogWarning("Post {id} not found", id);
                 return BadRequest();
             }
 
-            await postsRepo.DeleteAsync(id);
+            await postsRepo.RemovalOfBookFromRepository(id);
 
             _logger.LogInformation("Removing post {id} succeeded", id);
             return Ok();

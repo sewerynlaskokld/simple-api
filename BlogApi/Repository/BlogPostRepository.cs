@@ -9,7 +9,9 @@ namespace BlogApi.Repository
 {
     public class BlogPostRepository
     {
-        private readonly BlogPostContext context;
+        public readonly BlogPostContext context;
+        public bool isTitleAlreadyExisting;
+        public bool isSuchTitleAlreadyExisting;
 
         public BlogPostRepository(BlogPostContext context)
         {
@@ -28,30 +30,40 @@ namespace BlogApi.Repository
 
         public async Task AddingABookToRepository(BlogPost post)
         {
-            var isTitleAlreadyExisting = await context.BlogPosts.AnyAsync(x => x.Title.Equals(post.Title));
-
-            if (isTitleAlreadyExisting)
-            {
-                throw new BlogPostsDomainException($"Blog post with such title already exist: {post.Title}");
-            }
+            CheckIfIsTitleAlreadyExisting(post);
 
             await context.BlogPosts.AddAsync(post);
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdatingABookInRepository(BlogPost post)
+        public async void CheckIfIsTitleAlreadyExisting(BlogPost post)
         {
-            var isSuchTitleAlreadyExisting = await context.BlogPosts.AnyAsync(x => x.Title.Equals(post.Title) && x.Id != post.Id);
+            isTitleAlreadyExisting = await context.BlogPosts.AnyAsync(x => x.Title.Equals(post.Title));
 
-            if (isSuchTitleAlreadyExisting)
+            if (isTitleAlreadyExisting)
             {
                 throw new BlogPostsDomainException($"Blog post with such title already exist: {post.Title}");
             }
+        }
+
+        public async Task UpdatingABookInRepository(BlogPost post)
+        {
+            CheckIfIsSuchTitleAlreadyExisting(post);
 
             var existingPost = await context.BlogPosts.FindAsync(post.Id);
             context.Entry(existingPost).CurrentValues.SetValues(post);
 
             await context.SaveChangesAsync();
+        }
+
+        public async void CheckIfIsSuchTitleAlreadyExisting(BlogPost post)
+        {
+            isSuchTitleAlreadyExisting = await context.BlogPosts.AnyAsync(x => x.Title.Equals(post.Title) && x.Id != post.Id);
+
+            if (isSuchTitleAlreadyExisting)
+            {
+                throw new BlogPostsDomainException($"Blog post with such title already exist: {post.Title}");
+            }
         }
 
         public async Task RemovalOfBookFromRepository(long id)
