@@ -55,6 +55,11 @@ namespace BlogApi.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Create([FromBody] BlogPost post)
         {
+            if (string.IsNullOrEmpty(post.Description))
+            {
+                BadRequest();
+            }
+
             _logger.LogInformation("Adding new blog post");
 
             await postsRepo.AddingABookToRepository(post);
@@ -71,6 +76,11 @@ namespace BlogApi.Controllers
         {
             _logger.LogInformation("Updating post {0}", id);
             _logger.LogDebug("Received post id {0} with new title: {1}'", id, updatedPost.Title);
+
+            if (string.IsNullOrEmpty(updatedPost.Description))
+            {
+                BadRequest();
+            }
 
             var post = postsRepo.GettingOnlyOneBook(id).Result;
             if (post == null)
